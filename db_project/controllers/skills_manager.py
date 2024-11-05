@@ -43,6 +43,37 @@ def get_levels():
     return session.execute(qry).scalars().all()
 
 ##########TEMP#############
+level_points = {
+    'Beginner': 0,
+    'Intermediate': 25,
+    'Advanced': 50,
+    'Expert': 100
+}
+def points_to_next_level(level_name: str):
+    """Calculate points needed to reach next level."""
+    if level_name in level_points:
+        if level_name == 'Expert':
+            return 'Max'  
+        else:
+            return level_points[level_name] + 25 - level_points[level_name] 
+    return None
+
+def update_skill_level(skill_id: int, user_id: int, earned_points: int):
+    """ Update skill level based on earned points."""
+    skill = session.query(Skill).filter(Skill.id == skill_id, Skill.user_id == user_id).first()
+    if skill:
+        current_level_name = skill.level.name
+        current_points = level_points[current_level_name]
+        next_level_points = current_points + 25 
+
+        
+        if earned_points >= next_level_points:
+            skill.level_id += 1  
+            session.commit()
+            session.refresh(skill)
+        return skill
+    return None
+
 lvls = [
     {'name':'Beginner', 'rank':1},
     {'name':'Intermediate', 'rank':2},

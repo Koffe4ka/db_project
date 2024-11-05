@@ -1,12 +1,16 @@
 import streamlit as st
 import db_project.controllers.user_manager as um
 def navigation():
-    st.title("Vartotojo paskyra", anchor=False)
-    st.subheader("Jusu igudziai :sunglasses:", anchor=False)
+    
+    st.subheader(f"Sveiki prisijungę, {st.session_state['current_user'].name} :sunglasses:", anchor=False)
+    
+    
     st.sidebar.success(f"Prisijungęs vartotojas: {st.session_state['current_user'].name}")
-
+    if st.sidebar.button("Home"):
+        st.session_state['current_page'] = 'home'
     if st.sidebar.button("Add skill"):
         st.session_state['current_page'] = 'add-skill'
+    
 
 
 
@@ -29,4 +33,3 @@ def navigation():
             st.rerun()
         else:
             st.write("Įvyko klaida. Vartotojas nerastas arba neprisijunges.")
-

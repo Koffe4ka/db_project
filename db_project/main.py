@@ -14,7 +14,7 @@ init_db()
 if 'current_user' not in st.session_state:
     st.session_state['current_user'] = None
 if 'current_page' not in st.session_state:
-    st.session_state['current_page'] = None
+    st.session_state['current_page'] = 'home'
 
 
 if st.session_state['current_user']:
@@ -22,6 +22,7 @@ if st.session_state['current_user']:
     if st.session_state['current_page'] == 'add-skill':
         view.skill.add_skill()
     elif st.session_state['current_page'] == 'home':
+        st.subheader("Vartotojo paskyra", anchor=False)
         view.skill.show_my_skills()
         view.course.show_my_courses()
 
