@@ -4,9 +4,29 @@ def navigation():
     st.title("Vartotojo paskyra", anchor=False)
     st.subheader("Jusu igudziai :sunglasses:", anchor=False)
     st.sidebar.success(f"Prisijungęs vartotojas: {st.session_state['current_user'].name}")
+
+    if st.sidebar.button("Add skill"):
+        st.session_state['current_page'] = 'add-skill'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     if st.sidebar.button("Atsijungti"):
         if um.logout(st.session_state['current_user'].username):
             st.session_state['current_user'] = None
             st.rerun()
         else:
             st.write("Įvyko klaida. Vartotojas nerastas arba neprisijunges.")
+

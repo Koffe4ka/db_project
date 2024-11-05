@@ -7,17 +7,27 @@ from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, create_
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from db_project.controllers.user_manager import login, register, logout
 from db_project.db_setup import init_db
-import db_project.views.user as user_view
-import db_project.views.login as login_view
+import db_project.views as view
 
 init_db()
 
 if 'current_user' not in st.session_state:
     st.session_state['current_user'] = None
+if 'current_page' not in st.session_state:
+    st.session_state['current_page'] = None
 
 
 if st.session_state['current_user']:
-    user_view.navigation()
+    view.user.navigation()
+    if st.session_state['current_page'] == 'add-skill':
+        view.skill.add_skill()
+    elif st.session_state['current_page'] == 'home':
+        view.skill.show_my_skills()
+        view.course.show_my_courses()
+
+
+
+
 else:
     if 'show_login' not in st.session_state:
         st.session_state['show_login'] = False
@@ -36,6 +46,6 @@ else:
 
 
     if st.session_state['show_login']:
-        login_view.show_login() 
-    if st.session_state['show_register']:
-        login_view.show_registration()
+        view.login.show_login() 
+    elif st.session_state['show_register']:
+        view.login.show_registration()

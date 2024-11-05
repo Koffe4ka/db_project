@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from db_project.models import Skill
 from db_project.models import Level
 from db_project.db_setup import session
@@ -37,3 +38,25 @@ def delete_skill(skill_id: int, user_id: int):
         session.commit()
     return skill
 
+def get_levels():
+    qry = select(Level).order_by(Level.rank)
+    return session.execute(qry).scalars().all()
+
+##########TEMP#############
+lvls = [
+    {'name':'Beginner', 'rank':1},
+    {'name':'Intermediate', 'rank':2},
+    {'name':'Advanced','rank':3},
+    {'name':'Expert','rank':4}
+]
+
+for level in lvls:
+    qry = select(Level).where(Level.rank == level['rank'])
+    level_exists = session.execute(qry).scalars().one_or_none()
+    if not level_exists:
+        new_level = Level()
+        new_level.name = level['name']
+        new_level.rank = level['rank']
+        session.add(new_level)
+session.commit()
+##########TEMP#############
