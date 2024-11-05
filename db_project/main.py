@@ -19,12 +19,20 @@ if 'current_page' not in st.session_state:
 
 if st.session_state['current_user']:
     view.user.navigation()
-    if st.session_state['current_page'] == 'add-skill':
-        view.skill.add_skill()
-    elif st.session_state['current_page'] == 'home':
+    if st.session_state['current_page'] == 'home':
         st.subheader("Vartotojo paskyra", anchor=False)
         view.skill.show_my_skills()
+        view.course.show_my_registrations()
+    elif st.session_state['current_page'] == 'add-skill':
+        view.skill.add_skill()
+    elif st.session_state['current_page'] == 'add-course':
+        view.course.add_course()
+    elif st.session_state['current_page'] == 'my-courses':
         view.course.show_my_courses()
+    elif st.session_state['current_page'] == 'available-courses':
+        view.course.show_available_courses()
+    elif st.session_state['current_page'] == 'history':
+        view.course.show_available_courses()
 
 
 

@@ -2,17 +2,19 @@ from datetime import datetime
 from db_project.models import Course
 from db_project.db_setup import session
 from sqlalchemy import select
-def add_course(name:str, start_date: datetime, end_date: datetime, max_participants: int, skill_id:int):
+def add_course(name:str, description:str, start_date: datetime, end_date: datetime, max_participants: int, skill_id:int, user_id: int):
     """
     Returns True if course was added successfully
     Returns False if course for this skill already exists
     """
     new_course = Course(
         name = name,
+        description = description,
         start_date = start_date,
         end_date = end_date,
         max_participants = max_participants,
-        skill_id = skill_id
+        skill_id = skill_id,
+        user_id = user_id
     )
     qry = select(Course).where(Course.skill_id == skill_id)
     course = session.execute(qry).scalars().one_or_none()
