@@ -10,7 +10,14 @@ def navigation():
         st.session_state['current_page'] = 'home'
     if st.sidebar.button("Add skill"):
         st.session_state['current_page'] = 'add-skill'
-    
+    if st.sidebar.button("Create course"):
+        st.session_state['current_page'] = 'add-course'
+    if st.sidebar.button("My created courses"):
+        st.session_state['current_page'] = 'my-courses'
+    if st.sidebar.button("Available courses"):
+        st.session_state['current_page'] = 'available-courses'
+    if st.sidebar.button("Course History"):
+        st.session_state['current_page'] = 'history'
 
 
 
