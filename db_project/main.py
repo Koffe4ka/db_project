@@ -10,7 +10,7 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 # streamlit run db_project/main.py
 
 USER_DB = {
-    "admin": {"name": "Admin User", "password": "adminpass"},
+    "admin": {"name": "Admin User", "password": "admin"},
     "user1": {"name": "User One", "password": "user1pass"}
 }
 
