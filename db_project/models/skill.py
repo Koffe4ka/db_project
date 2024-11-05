@@ -7,7 +7,7 @@ class Skill(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
-    level_id = Column(Integer, nullable=False)
+    level_id = Column(Integer, ForeignKey('levels.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     user = relationship('User', back_populates='skills')
