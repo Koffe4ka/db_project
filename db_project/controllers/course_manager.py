@@ -1,0 +1,9 @@
+from datetime import datetime
+def add_course(name:str, user_id:int, start_date: datetime, end_date: datetime, max_participants: int, skill_id:int):
+    ...
+
+def show_courses(user_id:int = None):
+    ...
+
+def register_to_course(user_id:int, course_id:int):
+    ...
