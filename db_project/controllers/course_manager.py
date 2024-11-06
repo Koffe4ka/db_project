@@ -35,3 +35,7 @@ def get_others_courses(user_id:int):
 
 def register_to_course(user_id:int, course_id:int):
     ...
+
+def get_course_by_skill(skill_id: int):
+    qry = select(Course).where(Course.skill_id == skill_id)
+    return session.execute(qry).scalars().one_or_none()

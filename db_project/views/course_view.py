@@ -39,9 +39,19 @@ def add_course():
             st.error("You need at least one skill to create a course.")
             return
         
-        skill_options = {skill.id: skill.name for skill in skills}
-        skill_id = st.selectbox("Select Skill", list(skill_options.keys()), format_func=lambda x: skill_options[x])
+        available_skills = []
+        for skill in skills:
+            existing_course = cm.get_course_by_skill(skill.id)
+            if not existing_course:
+                available_skills.append(skill)
 
+        if not available_skills:
+            st.error("You have no available skills to create a course.")
+            return
+
+        skill_options = {skill.id: skill.name for skill in available_skills}
+        skill_id = st.selectbox("Choose Skill", list(skill_options.keys()), format_func=lambda x: skill_options[x])
+        skill_points = st.number_input("Skill Points", min_value=0, value=0)
         submitted = st.form_submit_button('Create Course')
         if submitted:
             success = cm.add_course(
@@ -54,14 +64,14 @@ def add_course():
                 user_id=current_user.id 
             )
             if success:
-                st.success(f"Course '{name}' created successfully.")
+                st.success(f"Course '{name}' with {skill_points} skill points created successfully.")
                 st.session_state['course_added'] = True
             else:
                 st.warning("A course for this skill already exists.")
 
 
 def show_my_courses():
-    st.subheader("Mano įgūdžiai", anchor=False)
+    st.subheader("Mano sukurti užsiėmimą", anchor=False)
     current_user = st.session_state.get('current_user')
 
     if current_user:
