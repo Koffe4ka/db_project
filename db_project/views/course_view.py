@@ -18,7 +18,7 @@ def add_course():
     if 'course_added' not in st.session_state:
         st.session_state['course_added'] = None
 
-    with st.form(key='add_course_form', clear_on_submit=True):
+    with st.form(key='add_course_form'):
         st.markdown(
             """ :grey[*Reikalavaimai:  
                     * Naudokite tik raides ir tarpus   

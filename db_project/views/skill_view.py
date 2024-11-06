@@ -10,7 +10,7 @@ def add_skill():
     if 'skill_added' not in st.session_state:
         st.session_state['skill_added'] = None
 
-    with st.form(key='add_skill_form', clear_on_submit=True): 
+    with st.form(key='add_skill_form'): 
         st.markdown(
             """ :grey[*Reikalavaimai:  
                     * Naudokite tik raides ir tarpus   
