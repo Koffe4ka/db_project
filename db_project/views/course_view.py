@@ -18,9 +18,17 @@ def add_course():
     if 'course_added' not in st.session_state:
         st.session_state['course_added'] = None
 
-    with st.form(key='add_course_form', clear_on_submit=True): 
-        name = st.text_input("Course title")
-        description = st.text_area("Description")
+    with st.form(key='add_course_form', clear_on_submit=True):
+        st.markdown(
+            """ :grey[*Reikalavaimai:  
+                    * Naudokite tik raides ir tarpus   
+                    * Pavadinimo ilgis nuo 3 iki 255 simbolių  
+                    * Pavadinimas turi prasidėti didžiąją raide*]""")
+        name = st.text_input("Course title", max_chars=255)
+        st.markdown(""" :grey[*Reikalavaimai:   
+                    * Aprašymas netrumpesnis nei 10 simbolių bei neilgesnis nei 500  
+                    * Pavadinimas turi prasidėti didžiąją raide*]""")
+        description = st.text_area("Description", max_chars=500)
 
         col1, col2 = st.columns(2)
         with col1:
@@ -36,7 +44,7 @@ def add_course():
 
         skills = sm.get_user_skills(current_user.id) 
         if not skills:
-            st.error("You need at least one skill to create a course.")
+            st.error("Turite turėti nors viena pridėtą įgūdį jog galėtumėte sukurti kursą.")
             return
         
         skill_options = {skill.id: skill.name for skill in skills}
@@ -44,7 +52,23 @@ def add_course():
 
         submitted = st.form_submit_button('Create Course')
         if submitted:
-            success = cm.add_course(
+            
+            is_valid_title = (
+                name 
+                and all(char.isalpha() or char.isspace() for char in name)
+                and len(name.strip()) >= 3
+                and name[0].isupper()
+            )
+            is_valid_description = (
+                description
+                and len(description.strip()) >= 10
+                and description[0].isupper()
+            )
+            is_valid_date = (
+                start_datetime < end_datetime
+            )
+            if is_valid_title and is_valid_description and is_valid_date:
+                success = cm.add_course(
                 name=name,
                 description=description,
                 start_date=start_datetime,
@@ -53,12 +77,25 @@ def add_course():
                 skill_id=skill_id,
                 user_id=current_user.id 
             )
-            if success:
-                st.success(f"Course '{name}' created successfully.")
-                st.session_state['course_added'] = True
-            else:
-                st.warning("A course for this skill already exists.")
+                if success:
+                    st.success(f"Kursas '{name}' sėkmingai sukurtas.")
+                    st.session_state['course_added'] = True
+                else:
+                    st.warning("Toks kursas jau egzistuoja")
 
+            if not is_valid_title:
+                st.error("Kurso pavadinimas negali būti trumpesnis nei 3 simboliai.")
+            elif not description or len(description) < 10:
+                st.error("Aprašymas negali būti trumpesnis nei 10 simbolių.")
+            elif start_datetime >= end_datetime:
+                st.error("Kurso pabaigos laikas negali būti anksčiau nei kurso pradžia")
+            elif max_participants < 1:
+                st.error("Dalyvių skaičius negali būti mažiau nei vienas")
+            elif skill_id not in skill_options:
+                st.error("Turite pasirinkti savo turimą įgūdį")
+            else:
+                st.error("Užpildykite visus laukelius ir bandykite dar kartą")
+            
 
 def show_my_courses():
     st.subheader("Mano įgūdžiai", anchor=False)
