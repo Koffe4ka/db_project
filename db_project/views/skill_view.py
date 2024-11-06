@@ -11,19 +11,61 @@ def add_skill():
         st.session_state['skill_added'] = None
 
     with st.form(key='add_skill_form', clear_on_submit=True): 
-        name = st.text_input("Skill title")
-        description = st.text_area("Description")
+        st.markdown(
+            """ :grey[*Reikalavaimai:  
+                    * Naudokite tik raides ir tarpus   
+                    * Pavadinimo ilgis nuo 3 iki 255 simbolių  
+                    * Pavadinimas turi prasidėti didžiąją raide*]""")
+        name = st.text_input("Skill title", max_chars=255)
+        if name:
+            if not all(char.isalpha() or char.isspace() for char in name):
+                st.error("Įgūdžio pavadinimas gali būti tik raidžių")
+            elif len(name.strip()) < 3:
+                st.error("Pavadinimas turėtų turėti mažiausiai 3 simbolius")
+            elif not name[0].isupper():
+                st.error("Pavadinimas prasideda iš didžiosios raidės")
+        
+        st.markdown(""" :grey[*Reikalavaimai:   
+                    * Aprašymas netrumpesnis nei 10 simbolių bei neilgesnis nei 500  
+                    * Pavadinimas turi prasidėti didžiąją raide*]""")
+        description = st.text_area("Description", max_chars=500)
+        if description:
+            if len(description.strip()) <10:
+                st.error("Įgūdžio aprašymas turėtu būti netrumpesnis nei 10 simbolių")
+            elif not description[0].isupper():
+                st.error("Aprašymas pradedamas didžiąją raide")
         levels = {level.id: level.name for level in sm.get_levels()}
         option = st.selectbox("Lygis", levels, format_func=lambda x: levels[x])
 
         submitted = st.form_submit_button('Add skill')
         if submitted:
-            if name and description and option in levels:
+            is_valid_title = (
+                name 
+                and all(char.isalpha() or char.isspace() for char in name)
+                and len(name.strip()) >= 3
+                and name[0].isupper()
+            )
+            is_valid_description = (
+                description
+                and len(description.strip()) >= 10
+                and description[0].isupper()
+            )
+            
+            if is_valid_title and is_valid_description and option in levels:
                 user_id = st.session_state['current_user'].id
                 sm.add_skill(user_id, name, description, option)
                 st.session_state['skill_added'] = (name, levels[option]) 
                 st.success(f"Skill '{name}' added successfully at level '{levels[option]}'.") 
                 st.rerun()
+            else:
+                if not is_valid_title:
+                    st.error("Prašome pataisyti pavadinimas pagal reikalavimus")
+                if not is_valid_description:
+                    st.error("Prašome pataisyti aprašyma pagal reikalavimus")
+                if not option not in levels:
+                    st.error("Prašome pasirinkti tinkama lygį")
+                
+                
     if st.session_state['skill_added']:
         skill_name, skill_level = st.session_state['skill_added']
         st.success(f"Skill '{skill_name}' added successfully at level '{skill_level}'.")
