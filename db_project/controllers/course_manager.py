@@ -1,6 +1,4 @@
 from datetime import datetime
-
-from altair import Description
 from db_project.models import Course
 from db_project.db_setup import session
 from sqlalchemy import select
