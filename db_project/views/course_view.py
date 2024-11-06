@@ -104,7 +104,7 @@ def show_my_courses():
 
 def show_available_courses():
     st.subheader("Galimi kursai")
-    courses = get_others_courses()
+    courses = get_others_courses(st.session_state['current_user'].id)
 
     if courses:
         for course in courses:
@@ -113,10 +113,38 @@ def show_available_courses():
             st.write(f"Pradžios data: {course.start_date.strftime('%Y-%m-%d %H:%M')}")
             st.write(f"Pabaigos data: {course.end_date.strftime('%Y-%m-%d %H:%M')}")
             st.write(f"Maksimalus dalyvių skaičius: {course.max_participants}")
+            st.write(f"Užsiregistravusiu dalyviu: {len(course.registrations)}")
+            available_spots = course.max_participants - len(course.registrations)
+            if available_spots > 0:
+                btn_text = "Register"
+            else:
+                btn_text = "Join waiting list"
+            if st.button(btn_text, key=course.id):
+                    reg_status = cm.register_to_course(st.session_state['current_user'].id,course.id)
+                    if reg_status == 1:
+                        st.success("Registered succesfully")
+                    elif reg_status == 2:
+                        st.success("Joined waiting list succesfully")
+                    else:
+                        st.warning("You have already registered for this course")
             st.write("---")
     else:
         st.write("Šiuo metu jokių kursų nėra")
 
 def show_my_registrations():
     st.subheader("Mano registracijos", anchor=False)
-    st.write ("No courses yet")
+    my_registrations = cm.get_my_registrations(st.session_state['current_user'].id)
+    if my_registrations:
+        for my_reg in my_registrations:
+            st.write(f"Course: {my_reg.course.name}")
+            st.write(f"Start date: {my_reg.course.start_date}")
+            st.write(f"End date: {my_reg.course.start_date}")
+            st.write(f"Status: {my_reg.status.name}")
+            st.write(f"Registration date: {my_reg.registration_date}")
+            if my_reg.status_id in [1,2]:
+                if st.button("Cancel", key=my_reg.id):
+                    cm.cancel_registration(st.session_state['current_user'].id, my_reg.course_id)
+                    st.rerun()
+            st.write("---")
+    else:
+        st.write ("No courses yet")

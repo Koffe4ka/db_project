@@ -1,5 +1,5 @@
 from datetime import datetime
-from db_project.models import Course, Registration
+from db_project.models import Course, Registration, RegistrationStatus
 from db_project.db_setup import session
 from sqlalchemy import select, or_, and_
 def add_course(name:str, description:str, start_date: datetime, end_date: datetime, max_participants: int, skill_id:int, user_id: int):
@@ -30,7 +30,7 @@ def get_my_courses(user_id:int):
     return session.execute(qry).scalars().all()
     
 def get_others_courses(user_id: int = None):
-    qry = select(Course)
+    qry = select(Course).where(Course.user_id != user_id)
     return session.execute(qry).scalars().all()
 
 def register_to_course(user_id:int, course_id:int):
@@ -47,10 +47,12 @@ def register_to_course(user_id:int, course_id:int):
         qry = select(Registration).where(Registration.course_id == course_id).order_by(Registration.registration_date)
         registrations = session.execute(qry).scalars().all()
         registered = [reg for reg in registrations if reg.status == 1]
-        qry = qry.where(Registration.user_id == user_id).where(Registration.status_id == 2)
+        qry = qry.where(Registration.user_id == user_id).where(Registration.status_id.in_([1, 2]))
         existing_registration = session.execute(qry).scalars().one_or_none()
         if len(registered) < course.max_participants:
             if existing_registration:
+                if existing_registration.status_id==1:
+                    return 0
                 existing_registration.status_id = 1
             else:
                 new_registration = Registration(user_id=user_id, course_id=course_id, status_id=1, registration_date=datetime.now())
@@ -103,3 +105,23 @@ def register_waiting_list(course_id:int):
 def get_course_by_skill(skill_id: int):
     qry = select(Course).where(Course.skill_id == skill_id)
     return session.execute(qry).scalars().one_or_none()
+
+def get_my_registrations(user_id: int):
+    qry = select(Registration).where(Registration.user_id == user_id)
+    return session.execute(qry).scalars().all()
+
+statuses = [
+    {'name':'Registered', 'rank':1},
+    {'name':'Waiting', 'rank':2},
+    {'name':'Cancelled','rank':3}
+]
+
+for st in statuses:
+    qry = select(RegistrationStatus).where(RegistrationStatus.id == st['rank'])
+    st_exists = session.execute(qry).scalars().one_or_none()
+    if not st_exists:
+        new_st = RegistrationStatus()
+        new_st.name = st['name']
+        new_st.id = st['rank']
+        session.add(new_st)
+session.commit()
