@@ -8,6 +8,7 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from db_project.controllers.user_manager import login, register, logout
 from db_project.db_setup import init_db
 import db_project.views as view
+import db_project.views.course_view as course_view
 
 init_db()
 
