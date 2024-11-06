@@ -12,6 +12,11 @@ def add_course():
     st.subheader("Sukurti užsiėmimą", anchor=False)
     current_user = st.session_state.get('current_user')
 
+    skills = sm.get_user_skills(current_user.id) 
+    if not skills:
+        st.error("Turite turėti nors viena pridėtą įgūdį jog galėtumėte sukurti kursą.")
+        return
+
     if not current_user:
         st.error("Please log in to create a course.")
         return
@@ -42,11 +47,6 @@ def add_course():
             end_datetime = datetime.combine(end_date, end_time)
 
         max_participants = st.number_input("Max Participants", min_value=1, value=1)
-
-        skills = sm.get_user_skills(current_user.id) 
-        if not skills:
-            st.error("Turite turėti nors viena pridėtą įgūdį jog galėtumėte sukurti kursą.")
-            return
         
         available_skills = []
         for skill in skills:
