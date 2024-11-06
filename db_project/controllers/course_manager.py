@@ -29,8 +29,8 @@ def get_my_courses(user_id:int):
     qry = select(Course).where(Course.user_id == user_id)
     return session.execute(qry).scalars().all()
     
-def get_others_courses(user_id:int):
-    qry = select(Course).where(Course.user_id != user_id)
+def get_others_courses(user_id: int = None):
+    qry = select(Course)
     return session.execute(qry).scalars().all()
 
 def register_to_course(user_id:int, course_id:int):

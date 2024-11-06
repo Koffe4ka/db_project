@@ -3,6 +3,7 @@ from datetime import datetime, time
 from sqlalchemy import select
 import pandas as pd
 from time import sleep
+from db_project.controllers.course_manager import get_others_courses
 import db_project.controllers.user_manager as um
 import db_project.controllers.skills_manager as sm
 import db_project.controllers.course_manager as cm
@@ -102,7 +103,19 @@ def show_my_courses():
         st.write("User not logged in")
 
 def show_available_courses():
-    ...
+    st.subheader("Galimi kursai")
+    courses = get_others_courses()
+
+    if courses:
+        for course in courses:
+            st.subheader(course.name)
+            st.write(f"Aprašymas: {course.description}")
+            st.write(f"Pradžios data: {course.start_date.strftime('%Y-%m-%d %H:%M')}")
+            st.write(f"Pabaigos data: {course.end_date.strftime('%Y-%m-%d %H:%M')}")
+            st.write(f"Maksimalus dalyvių skaičius: {course.max_participants}")
+            st.write("---")
+    else:
+        st.write("Šiuo metu jokių kursų nėra")
 
 def show_my_registrations():
     st.subheader("Mano registracijos", anchor=False)
